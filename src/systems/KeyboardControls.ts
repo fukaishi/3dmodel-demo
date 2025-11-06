@@ -171,7 +171,9 @@ export class KeyboardControls {
       // Snap
       case 's':
       case 'S':
-        // Snap logic will be handled by SnapSystem in the scene
+        if (part.isGrabbed) {
+          store.trySnapPart(selectedPartId);
+        }
         break;
 
       // Hint

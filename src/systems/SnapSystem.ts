@@ -22,6 +22,13 @@ export class SnapSystem {
   }
 
   /**
+   * Get all extracted sockets
+   */
+  getSockets(): SocketPoint[] {
+    return this.sockets;
+  }
+
+  /**
    * Extract socket points from a ghost model
    */
   extractSockets(ghostModel: Object3D): SocketPoint[] {

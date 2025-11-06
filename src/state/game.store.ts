@@ -18,6 +18,10 @@ interface GameStore {
   showGrid: boolean;
   zoomLevel: number;
 
+  // Hint/Feedback state
+  showHintForPartId: string | null;
+  snapFeedback: { partId: string; success: boolean } | null;
+
   // Actions
   setGameState: (state: GameState) => void;
   loadLevel: (level: Level) => void;
@@ -32,12 +36,15 @@ interface GameStore {
   rotatePart: (partId: string, axis: 'x' | 'y' | 'z', degrees: number) => void;
   resetPart: (partId: string) => void;
   snapPart: (partId: string) => void;
+  trySnapPart: (partId: string) => void;
 
   // UI actions
   toggleGhost: () => void;
   toggleGrid: () => void;
   adjustZoom: (delta: number) => void;
   useHint: () => void;
+  clearHint: () => void;
+  clearSnapFeedback: () => void;
   resetLevel: () => void;
 
   // Progress tracking
@@ -61,6 +68,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
   showGhost: true,
   showGrid: false,
   zoomLevel: 1.0,
+  showHintForPartId: null,
+  snapFeedback: null,
 
   // State setters
   setGameState: (state) => set({ gameState: state }),
@@ -208,6 +217,12 @@ export const useGameStore = create<GameStore>((set, get) => ({
     set({ parts: newParts });
   },
 
+  trySnapPart: (partId) => {
+    // This will be handled by the Scene component with SnapSystem
+    // Just set a flag to trigger the snap attempt
+    set({ snapFeedback: { partId, success: false } });
+  },
+
   toggleGhost: () => set((state) => ({ showGhost: !state.showGhost })),
 
   toggleGrid: () => set((state) => ({ showGrid: !state.showGrid })),
@@ -218,14 +233,26 @@ export const useGameStore = create<GameStore>((set, get) => ({
     })),
 
   useHint: () => {
-    const { stats } = get();
+    const { stats, selectedPartId } = get();
+    if (!selectedPartId) return;
+
     set({
       stats: {
         ...stats,
         hintsUsed: stats.hintsUsed + 1,
       },
+      showHintForPartId: selectedPartId,
     });
+
+    // Auto-hide hint after 3 seconds
+    setTimeout(() => {
+      get().clearHint();
+    }, 3000);
   },
+
+  clearHint: () => set({ showHintForPartId: null }),
+
+  clearSnapFeedback: () => set({ snapFeedback: null }),
 
   resetLevel: () => {
     const { currentLevel } = get();
