@@ -22,9 +22,7 @@ export function Scene() {
   // Extract sockets when ghost model loads
   const handleGhostLoaded = (group: Group) => {
     ghostRef.current = group;
-    console.log('👻 Loading ghost model, extracting sockets...');
-    const extractedSockets = snapSystem.extractSockets(group);
-    console.log(`✅ Extracted ${extractedSockets.length} sockets from ghost model:`, extractedSockets);
+    snapSystem.extractSockets(group);
   };
 
   // Extract attach points when part loads
@@ -34,12 +32,8 @@ export function Scene() {
     const currentSelectedPartId = useGameStore.getState().selectedPartId;
 
     const part = currentParts.get(partId);
-    if (!part) {
-      console.error(`❌ Part ${partId} not found in parts map!`);
-      return;
-    }
+    if (!part) return;
 
-    console.log(`🔧 Loading part ${partId}, extracting attach points...`);
     const attachPoints = snapSystem.extractAttachPoints(group);
 
     // Update part state with attach points
@@ -47,11 +41,8 @@ export function Scene() {
     newParts.set(partId, { ...part, attachPoints });
     useGameStore.setState({ parts: newParts });
 
-    console.log(`✅ Extracted ${attachPoints.length} attach points from part ${partId}:`, attachPoints);
-
     // Auto-select this part if no part is selected
     if (!currentSelectedPartId) {
-      console.log(`🎯 Auto-selecting part ${partId}`);
       useGameStore.setState({ selectedPartId: partId });
     }
   };
