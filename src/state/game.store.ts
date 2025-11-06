@@ -54,7 +54,7 @@ interface GameStore {
 
 export const useGameStore = create<GameStore>((set, get) => ({
   // Initial state
-  gameState: 'idle',
+  gameState: 'title',
   currentLevel: null,
   parts: new Map(),
   selectedPartId: null,

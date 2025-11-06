@@ -9,8 +9,16 @@ export function HUD() {
   const parts = useGameStore((state) => state.parts);
   const selectedPartId = useGameStore((state) => state.selectedPartId);
   const resetLevel = useGameStore((state) => state.resetLevel);
+  const setGameState = useGameStore((state) => state.setGameState);
 
   const [elapsedTime, setElapsedTime] = useState(0);
+
+  // Reset timer when level loads
+  useEffect(() => {
+    if (gameState === 'playing') {
+      setElapsedTime(0);
+    }
+  }, [currentLevel?.id, gameState]);
 
   useEffect(() => {
     if (gameState !== 'playing') return;
@@ -119,9 +127,14 @@ export function HUD() {
             <h1>Level Complete!</h1>
             <p>Time: {formatTime(elapsedTime)}</p>
             <p>Stars: {'★'.repeat(stats.stars)}</p>
-            <button onClick={resetLevel} className="hud-button large">
-              Retry
-            </button>
+            <div className="win-buttons">
+              <button onClick={resetLevel} className="hud-button large">
+                Retry
+              </button>
+              <button onClick={() => setGameState('title')} className="hud-button large">
+                タイトルに戻る
+              </button>
+            </div>
           </div>
         </div>
       )}
