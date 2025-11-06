@@ -43,6 +43,8 @@ export class SnapSystem {
         child.getWorldPosition(worldPos);
         child.getWorldQuaternion(worldQuat);
 
+        console.log(`  🔌 Found socket: ${socketName} at`, worldPos);
+
         sockets.push({
           name: socketName,
           position: worldPos.clone(),
@@ -57,23 +59,36 @@ export class SnapSystem {
 
   /**
    * Extract attach points from a part model
+   * Returns LOCAL coordinates relative to the part model
    */
   extractAttachPoints(partModel: Object3D): AttachPoint[] {
     const points: AttachPoint[] = [];
 
+    console.log('  🔍 Traversing part model for attach points...');
+
+    // Get part model's world transform
+    const partWorldPos = new Vector3();
+    const partWorldQuat = new Quaternion();
+    partModel.getWorldPosition(partWorldPos);
+    partModel.getWorldQuaternion(partWorldQuat);
+
+    console.log('  📦 Part model world position:', partWorldPos);
+
     partModel.traverse((child) => {
+      console.log(`    - Child name: "${child.name}"`);
       if (child.name.startsWith('_AP_')) {
         const pointName = child.name.replace(/^_AP_/, '');
-        const worldPos = new Vector3();
-        const worldQuat = new Quaternion();
 
-        child.getWorldPosition(worldPos);
-        child.getWorldQuaternion(worldQuat);
+        // Get local position relative to the part model
+        const localPos = child.position.clone();
+        const localQuat = child.quaternion.clone();
+
+        console.log(`    📍 Found attach point: ${pointName} at LOCAL`, localPos);
 
         points.push({
           name: pointName,
-          position: worldPos.clone(),
-          quaternion: worldQuat.clone(),
+          position: localPos,
+          quaternion: localQuat,
         });
       }
     });
@@ -159,6 +174,14 @@ export class SnapSystem {
     attachPoints: AttachPoint[],
     targetSocketName: string
   ): SnapResult {
+    console.log('🔧 trySnap called with:', {
+      partPosition,
+      partRotation,
+      attachPointsCount: attachPoints.length,
+      targetSocketName,
+      availableSockets: this.sockets.length
+    });
+
     // Update attach point positions based on current part transform
     const updatedAttachPoints = this.updateAttachPoints(
       attachPoints,
@@ -166,11 +189,17 @@ export class SnapSystem {
       partRotation
     );
 
-    return this.findBestSocket(updatedAttachPoints, targetSocketName);
+    console.log('🔄 Updated attach points:', updatedAttachPoints);
+
+    const result = this.findBestSocket(updatedAttachPoints, targetSocketName);
+    console.log('📊 findBestSocket result:', result);
+
+    return result;
   }
 
   /**
    * Update attach point transforms based on part position/rotation
+   * Converts local attach points to world coordinates
    */
   private updateAttachPoints(
     attachPoints: AttachPoint[],
@@ -180,11 +209,12 @@ export class SnapSystem {
     const partQuat = new Quaternion().setFromEuler(rotation);
 
     return attachPoints.map((point) => {
-      // Calculate world position
+      // Calculate world position: rotate local position, then add part position
       const worldPos = point.position.clone().applyQuaternion(partQuat).add(position);
 
-      // Calculate world rotation
-      const worldQuat = point.quaternion.clone().multiply(partQuat);
+      // Calculate world rotation: apply part rotation first, then local rotation
+      // In Three.js, q1.multiply(q2) means "apply q2 first, then q1"
+      const worldQuat = partQuat.clone().multiply(point.quaternion);
 
       return {
         name: point.name,

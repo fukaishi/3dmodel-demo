@@ -20,7 +20,7 @@ interface GameStore {
 
   // Hint/Feedback state
   showHintForPartId: string | null;
-  snapFeedback: { partId: string; success: boolean } | null;
+  snapFeedback: { partId: string; success: boolean; message?: string } | null;
 
   // Actions
   setGameState: (state: GameState) => void;
@@ -220,6 +220,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   trySnapPart: (partId) => {
     // This will be handled by the Scene component with SnapSystem
     // Just set a flag to trigger the snap attempt
+    console.log('🎯 trySnapPart called for:', partId);
     set({ snapFeedback: { partId, success: false } });
   },
 

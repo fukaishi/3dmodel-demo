@@ -42,9 +42,10 @@ export function Part({ partState, isSelected, onLoaded }: PartProps) {
 
         setIsLoaded(true);
 
-        // Notify parent that model is loaded
+        // Notify parent that model is loaded - pass the fallbackModel directly
         if (onLoaded) {
-          onLoaded(groupRef.current);
+          console.log(`🎨 Part ${partState.id} loaded, notifying with fallbackModel`);
+          onLoaded(fallbackModel);
         }
       }
     };
