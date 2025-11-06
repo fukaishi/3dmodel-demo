@@ -2,6 +2,10 @@
 
 A web-based low-poly 3D puzzle game built with React, Vite, and react-three-fiber. Assemble 3D models by rotating and positioning parts until they snap together!
 
+🎮 **[Play Live Demo](https://fukaishi.github.io/3dmodel-demo/)**
+
+[![Deploy to GitHub Pages](https://github.com/fukaishi/3dmodel-demo/actions/workflows/deploy.yml/badge.svg)](https://github.com/fukaishi/3dmodel-demo/actions/workflows/deploy.yml)
+
 ## Features
 
 - **Keyboard-Only Controls**: Mac/Windows compatible keyboard controls (no mouse required for gameplay)
@@ -191,6 +195,34 @@ All parts correctly snapped to their designated sockets.
 - Safari 14+
 
 Requires WebGL 2.0 support.
+
+## Deployment
+
+This project is automatically deployed to GitHub Pages when changes are pushed to the `main` branch.
+
+### GitHub Pages Setup
+
+The repository is configured with GitHub Actions for automatic deployment:
+
+1. **Workflow**: `.github/workflows/deploy.yml` handles the build and deployment
+2. **Build**: Runs `npm ci` and `npm run build`
+3. **Deploy**: Deploys the `dist` folder to GitHub Pages
+
+### Manual Deployment
+
+To deploy manually:
+
+```bash
+npm run build
+```
+
+The built files will be in the `dist` directory, which can be deployed to any static hosting service.
+
+### Configuration
+
+The `vite.config.ts` is configured to use the correct base path for GitHub Pages:
+- Development: `/` (localhost)
+- Production: `/3dmodel-demo/` (GitHub Pages)
 
 ## License
 
