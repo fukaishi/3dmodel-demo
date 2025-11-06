@@ -22,27 +22,26 @@ const sampleLevel: Level = {
         rot: [0, 0, 0],
       },
     },
-    // Temporarily disabled for testing
-    // {
-    //   id: 'part2',
-    //   file: '/models/part2.glb',
-    //   snapTo: 'socket2',
-    //   rotStep: 15,
-    //   start: {
-    //     pos: [2, 0.5, 0],
-    //     rot: [0, 0, 0],
-    //   },
-    // },
-    // {
-    //   id: 'part3',
-    //   file: '/models/part3.glb',
-    //   snapTo: 'socket3',
-    //   rotStep: 15,
-    //   start: {
-    //     pos: [0, 0.5, 2],
-    //     rot: [0, 0, 0],
-    //   },
-    // },
+    {
+      id: 'part2',
+      file: '/models/part2.glb',
+      snapTo: 'socket2',
+      rotStep: 15,
+      start: {
+        pos: [2, 0.5, 0],
+        rot: [0, 0, 0],
+      },
+    },
+    {
+      id: 'part3',
+      file: '/models/part3.glb',
+      snapTo: 'socket3',
+      rotStep: 15,
+      start: {
+        pos: [0, 0.5, 2],
+        rot: [0, 0, 0],
+      },
+    },
   ],
   tolerance: {
     pos: 0.05,
