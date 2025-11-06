@@ -82,8 +82,10 @@ export class KeyboardControls {
       // Grab/Release
       case 'Enter':
         if (part.isGrabbed) {
+          console.log('🔓 Releasing part:', selectedPartId);
           store.releasePart(selectedPartId);
         } else {
+          console.log('🔒 Grabbing part:', selectedPartId);
           store.grabPart(selectedPartId);
         }
         break;
@@ -171,8 +173,18 @@ export class KeyboardControls {
       // Snap
       case 's':
       case 'S':
+        console.log('🔑 S key pressed!', {
+          selectedPartId,
+          isGrabbed: part.isGrabbed,
+          isSnapped: part.isSnapped,
+          position: part.position,
+          rotation: part.rotation,
+        });
         if (part.isGrabbed) {
+          console.log('✅ Part is grabbed, calling trySnapPart');
           store.trySnapPart(selectedPartId);
+        } else {
+          console.log('❌ Part is not grabbed, cannot snap');
         }
         break;
 
