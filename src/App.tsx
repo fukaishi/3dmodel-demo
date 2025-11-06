@@ -23,6 +23,7 @@ const levels: Record<number, Level> = {
           pos: [-2, 0.5, 0],
           rot: [0, 0, 0],
         },
+        symmetry: { type: 'box' }, // Cube has 90-degree rotational symmetry
       },
       {
         id: 'part2',
@@ -33,6 +34,7 @@ const levels: Record<number, Level> = {
           pos: [2, 0.5, 0],
           rot: [0, 0, 0],
         },
+        symmetry: { type: 'cylinder' }, // Cylinder has Y-axis rotational symmetry
       },
       {
         id: 'part3',
@@ -43,6 +45,7 @@ const levels: Record<number, Level> = {
           pos: [0, 0.5, 2],
           rot: [0, 0, 0],
         },
+        symmetry: { type: 'box' }, // Small cube has 90-degree rotational symmetry
       },
     ],
     tolerance: {
@@ -66,6 +69,7 @@ const levels: Record<number, Level> = {
           pos: [-2.5, 0.5, -1],
           rot: [0, Math.PI / 2, 0], // 90度回転
         },
+        symmetry: { type: 'box' },
       },
       {
         id: 'part2',
@@ -76,6 +80,7 @@ const levels: Record<number, Level> = {
           pos: [2.5, 0.5, 1],
           rot: [0, -Math.PI / 2, 0],
         },
+        symmetry: { type: 'cylinder' },
       },
       {
         id: 'part3',
@@ -86,6 +91,7 @@ const levels: Record<number, Level> = {
           pos: [0, 0.5, 2.5],
           rot: [0, Math.PI, 0],
         },
+        symmetry: { type: 'box' },
       },
     ],
     tolerance: {
@@ -109,6 +115,7 @@ const levels: Record<number, Level> = {
           pos: [-3, 0.5, -2],
           rot: [0, Math.PI / 4, 0],
         },
+        symmetry: { type: 'box' },
       },
       {
         id: 'part2',
@@ -119,6 +126,7 @@ const levels: Record<number, Level> = {
           pos: [3, 0.5, 2],
           rot: [0, -Math.PI / 4, 0],
         },
+        symmetry: { type: 'cylinder' },
       },
       {
         id: 'part3',
@@ -129,6 +137,7 @@ const levels: Record<number, Level> = {
           pos: [0, 0.5, 3],
           rot: [0, Math.PI * 3 / 4, 0],
         },
+        symmetry: { type: 'box' },
       },
     ],
     tolerance: {

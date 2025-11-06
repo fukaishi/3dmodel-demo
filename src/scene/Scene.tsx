@@ -88,7 +88,8 @@ export function Scene() {
       part.position,
       new Euler(part.rotation.x, part.rotation.y, part.rotation.z),
       part.attachPoints,
-      partConfig.snapTo
+      partConfig.snapTo,
+      partConfig.symmetry?.type
     );
 
     console.log(`📊 Snap result for ${partId}:`, result);

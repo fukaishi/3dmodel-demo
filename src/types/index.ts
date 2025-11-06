@@ -17,6 +17,13 @@ export interface PartConfig {
     pos: [number, number, number];
     rot: [number, number, number];
   };
+  // Symmetry configuration for snap angle tolerance
+  symmetry?: {
+    // 'box': 90-degree rotational symmetry (4-fold)
+    // 'cylinder': Y-axis rotational symmetry (any angle around Y is same)
+    // 'sphere': Complete symmetry (any rotation is same)
+    type: 'box' | 'cylinder' | 'sphere' | 'none';
+  };
 }
 
 export interface Level {
