@@ -13,6 +13,12 @@ interface PartProps {
 export function Part({ partState, isSelected, onLoaded }: PartProps) {
   const groupRef = useRef<Group>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const onLoadedRef = useRef(onLoaded);
+
+  // Keep onLoadedRef up to date
+  useEffect(() => {
+    onLoadedRef.current = onLoaded;
+  }, [onLoaded]);
 
   useEffect(() => {
     if (!groupRef.current) return;
@@ -43,15 +49,15 @@ export function Part({ partState, isSelected, onLoaded }: PartProps) {
         setIsLoaded(true);
 
         // Notify parent that model is loaded - pass the fallbackModel directly
-        if (onLoaded) {
+        if (onLoadedRef.current) {
           console.log(`🎨 Part ${partState.id} loaded, notifying with fallbackModel`);
-          onLoaded(fallbackModel);
+          onLoadedRef.current(fallbackModel);
         }
       }
     };
 
     loadModel();
-  }, [partState.id, onLoaded]);
+  }, [partState.id]); // Only re-run when partState.id changes
 
   // Update position and rotation from state
   useFrame(() => {

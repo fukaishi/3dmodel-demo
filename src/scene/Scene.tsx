@@ -29,7 +29,11 @@ export function Scene() {
 
   // Extract attach points when part loads
   const handlePartLoaded = (partId: string) => (group: Group) => {
-    const part = parts.get(partId);
+    // Get the latest state directly from the store to avoid stale closures
+    const currentParts = useGameStore.getState().parts;
+    const currentSelectedPartId = useGameStore.getState().selectedPartId;
+
+    const part = currentParts.get(partId);
     if (!part) {
       console.error(`❌ Part ${partId} not found in parts map!`);
       return;
@@ -39,14 +43,14 @@ export function Scene() {
     const attachPoints = snapSystem.extractAttachPoints(group);
 
     // Update part state with attach points
-    const newParts = new Map(parts);
+    const newParts = new Map(currentParts);
     newParts.set(partId, { ...part, attachPoints });
     useGameStore.setState({ parts: newParts });
 
     console.log(`✅ Extracted ${attachPoints.length} attach points from part ${partId}:`, attachPoints);
 
     // Auto-select this part if no part is selected
-    if (!selectedPartId) {
+    if (!currentSelectedPartId) {
       console.log(`🎯 Auto-selecting part ${partId}`);
       useGameStore.setState({ selectedPartId: partId });
     }
