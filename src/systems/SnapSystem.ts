@@ -134,6 +134,7 @@ export class SnapSystem {
     let bestSocket: SocketPoint | null = null;
     let bestScore = Infinity;
 
+    console.log('  🔍 Evaluating candidates:');
     for (const socket of orderedCandidates) {
       // Check name match
       const isCorrect = socket.name === targetSocketName;
@@ -147,17 +148,28 @@ export class SnapSystem {
         socket.quaternion
       );
 
+      console.log(`    - Socket "${socket.name}": posDiff=${posDiff.toFixed(4)}, angleDiff=${angleDiff.toFixed(2)}°, isCorrect=${isCorrect}, tolerance=(pos<${this.tolerance.pos}, angle<${this.tolerance.deg}°)`);
+
       // Check if within tolerance
       if (posDiff < this.tolerance.pos && angleDiff < this.tolerance.deg) {
         const score = posDiff + angleDiff * 0.01;
+        console.log(`      ✓ Within tolerance! score=${score.toFixed(4)}`);
         if (score < bestScore) {
           bestSocket = socket;
           bestScore = score;
 
           // For correct socket name, accept immediately
           if (isCorrect) {
+            console.log(`      ✓✓ Correct socket found, accepting immediately`);
             break;
           }
+        }
+      } else {
+        if (posDiff >= this.tolerance.pos) {
+          console.log(`      ✗ Position too far: ${posDiff.toFixed(4)} >= ${this.tolerance.pos}`);
+        }
+        if (angleDiff >= this.tolerance.deg) {
+          console.log(`      ✗ Angle too large: ${angleDiff.toFixed(2)}° >= ${this.tolerance.deg}°`);
         }
       }
     }
