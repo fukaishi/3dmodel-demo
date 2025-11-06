@@ -1,6 +1,6 @@
 import { Vector3, Quaternion } from 'three';
 
-export type GameState = 'idle' | 'playing' | 'paused' | 'success' | 'fail';
+export type GameState = 'title' | 'idle' | 'playing' | 'paused' | 'success' | 'fail';
 
 export interface Vector3Tuple {
   x: number;

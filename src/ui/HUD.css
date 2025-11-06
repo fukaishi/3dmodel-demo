@@ -147,6 +147,13 @@ kbd {
   font-size: 18px;
 }
 
-.win-screen button {
+.win-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
   margin-top: 20px;
+}
+
+.win-screen button {
+  margin: 0;
 }
