@@ -82,10 +82,8 @@ export class KeyboardControls {
       // Grab/Release
       case 'Enter':
         if (part.isGrabbed) {
-          console.log('🔓 Releasing part:', selectedPartId);
           store.releasePart(selectedPartId);
         } else {
-          console.log('🔒 Grabbing part:', selectedPartId);
           store.grabPart(selectedPartId);
         }
         break;

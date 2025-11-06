@@ -43,8 +43,6 @@ export class SnapSystem {
         child.getWorldPosition(worldPos);
         child.getWorldQuaternion(worldQuat);
 
-        console.log(`  🔌 Found socket: ${socketName} at`, worldPos);
-
         sockets.push({
           name: socketName,
           position: worldPos.clone(),
@@ -64,26 +62,13 @@ export class SnapSystem {
   extractAttachPoints(partModel: Object3D): AttachPoint[] {
     const points: AttachPoint[] = [];
 
-    console.log('  🔍 Traversing part model for attach points...');
-
-    // Get part model's world transform
-    const partWorldPos = new Vector3();
-    const partWorldQuat = new Quaternion();
-    partModel.getWorldPosition(partWorldPos);
-    partModel.getWorldQuaternion(partWorldQuat);
-
-    console.log('  📦 Part model world position:', partWorldPos);
-
     partModel.traverse((child) => {
-      console.log(`    - Child name: "${child.name}"`);
       if (child.name.startsWith('_AP_')) {
         const pointName = child.name.replace(/^_AP_/, '');
 
         // Get local position relative to the part model
         const localPos = child.position.clone();
         const localQuat = child.quaternion.clone();
-
-        console.log(`    📍 Found attach point: ${pointName} at LOCAL`, localPos);
 
         points.push({
           name: pointName,
@@ -110,13 +95,22 @@ export class SnapSystem {
     // Use the first attach point for simplicity
     const attachPoint = attachPoints[0];
 
+    console.log(`  📍 Attach point "${attachPoint.name}" world position:`, attachPoint.position);
+
     // Find candidate sockets within proximity
+    const proximityLimit = this.tolerance.pos * 6;
+    console.log(`  🔍 Checking distances to all sockets (proximity limit: ${proximityLimit.toFixed(4)}m):`);
+
     const candidates = this.sockets.filter((socket) => {
       const distance = attachPoint.position.distanceTo(socket.position);
-      return distance < this.tolerance.pos * 6;
+      console.log(`    - "${socket.name}": ${distance.toFixed(4)}m ${distance < proximityLimit ? '✓' : '✗ (too far)'}`);
+      return distance < proximityLimit;
     });
 
+    console.log(`  📊 Found ${candidates.length} candidate sockets within proximity`);
+
     if (candidates.length === 0) {
+      console.log(`  ❌ No sockets within ${proximityLimit.toFixed(4)}m - part is too far!`);
       return { success: false };
     }
 
