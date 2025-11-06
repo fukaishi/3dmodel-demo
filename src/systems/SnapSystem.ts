@@ -195,6 +195,7 @@ export class SnapSystem {
       partPosition,
       partRotation,
       attachPointsCount: attachPoints.length,
+      attachPointNames: attachPoints.map(ap => ap.name),
       targetSocketName,
       availableSockets: this.sockets.length
     });
@@ -206,7 +207,7 @@ export class SnapSystem {
       partRotation
     );
 
-    console.log('🔄 Updated attach points:', updatedAttachPoints);
+    console.log('🔄 Updated attach points:', updatedAttachPoints.map(ap => ({ name: ap.name, position: ap.position })));
 
     const result = this.findBestSocket(updatedAttachPoints, targetSocketName);
     console.log('📊 findBestSocket result:', result);
