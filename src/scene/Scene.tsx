@@ -56,6 +56,9 @@ export function Scene() {
   useEffect(() => {
     if (!snapFeedback) return;
 
+    // If message is already set, this snap attempt has been processed - avoid infinite loop
+    if (snapFeedback.message) return;
+
     const { partId } = snapFeedback;
     const part = parts.get(partId);
     const partConfig = currentLevel?.parts.find((p) => p.id === partId);
