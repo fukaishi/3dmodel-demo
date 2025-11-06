@@ -36,6 +36,8 @@ npm run dev
 
 Open your browser to `http://localhost:5173`
 
+**Note**: The game currently uses fallback 3D models (simple geometric primitives) so you can test it immediately without GLB files. To use custom models, place your GLB files in `public/models/` and follow the instructions in `public/models/README.md`.
+
 ### Build
 
 ```bash
