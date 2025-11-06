@@ -81,6 +81,15 @@ export function Scene() {
 
       console.log(`✓ Part ${partId} snapped successfully!`);
 
+      // Check if all parts are snapped (win condition)
+      const allSnapped = Array.from(newParts.values()).every((p) => p.isSnapped);
+      if (allSnapped) {
+        console.log('🎉 All parts snapped! Level complete!');
+        setTimeout(() => {
+          useGameStore.getState().setGameState('success');
+        }, 1500); // Delay to show the last snap feedback
+      }
+
       // Clear feedback after 1 second
       setTimeout(() => {
         useGameStore.getState().clearSnapFeedback();
@@ -109,7 +118,7 @@ export function Scene() {
     if (!part || !partConfig) return;
 
     // Find the target socket
-    const sockets = snapSystem['sockets']; // Access private field for hint
+    const sockets = snapSystem.getSockets();
     const targetSocket = sockets.find((s) => s.name === partConfig.snapTo);
 
     if (targetSocket) {
