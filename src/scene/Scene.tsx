@@ -50,9 +50,29 @@ export function Scene() {
     const partConfig = currentLevel?.parts.find((p) => p.id === partId);
 
     if (!part || !partConfig) {
-      useGameStore.getState().clearSnapFeedback();
+      useGameStore.setState({
+        snapFeedback: { partId, success: false, message: 'Part not found' }
+      });
+      setTimeout(() => useGameStore.getState().clearSnapFeedback(), 2000);
       return;
     }
+
+    // Check if part has attach points
+    if (!part.attachPoints || part.attachPoints.length === 0) {
+      console.warn(`⚠️ Part ${partId} has no attach points!`);
+      useGameStore.setState({
+        snapFeedback: { partId, success: false, message: 'No attach points found' }
+      });
+      setTimeout(() => useGameStore.getState().clearSnapFeedback(), 2000);
+      return;
+    }
+
+    console.log(`🔍 Attempting snap for ${partId}:`, {
+      position: part.position,
+      rotation: part.rotation,
+      attachPoints: part.attachPoints.length,
+      targetSocket: partConfig.snapTo
+    });
 
     // Try to snap
     const result = snapSystem.trySnap(
@@ -61,6 +81,8 @@ export function Scene() {
       part.attachPoints,
       partConfig.snapTo
     );
+
+    console.log(`📊 Snap result for ${partId}:`, result);
 
     if (result.success && result.socket && result.isCorrect) {
       // Success! Move part to socket
@@ -76,7 +98,7 @@ export function Scene() {
       });
       useGameStore.setState({
         parts: newParts,
-        snapFeedback: { partId, success: true }
+        snapFeedback: { partId, success: true, message: '✓ Snapped!' }
       });
 
       console.log(`✓ Part ${partId} snapped successfully!`);
@@ -87,21 +109,37 @@ export function Scene() {
         console.log('🎉 All parts snapped! Level complete!');
         setTimeout(() => {
           useGameStore.getState().setGameState('success');
-        }, 1500); // Delay to show the last snap feedback
+        }, 1500);
       }
 
-      // Clear feedback after 1 second
+      // Clear feedback after 2 seconds
       setTimeout(() => {
         useGameStore.getState().clearSnapFeedback();
-      }, 1000);
+      }, 2000);
     } else {
-      // Failed - show error feedback
-      console.log(`✗ Part ${partId} snap failed - not close enough or wrong orientation`);
+      // Failed - show error feedback with reason
+      let message = '✗ Snap Failed';
 
-      // Clear feedback after 500ms
+      if (!result.success) {
+        message = '✗ Too far or wrong angle';
+      } else if (!result.isCorrect) {
+        message = '✗ Wrong socket';
+      }
+
+      console.log(`✗ Part ${partId} snap failed:`, {
+        success: result.success,
+        isCorrect: result.isCorrect,
+        score: result.score
+      });
+
+      useGameStore.setState({
+        snapFeedback: { partId, success: false, message }
+      });
+
+      // Clear feedback after 2 seconds
       setTimeout(() => {
         useGameStore.getState().clearSnapFeedback();
-      }, 500);
+      }, 2000);
     }
   }, [snapFeedback, parts, currentLevel, snapSystem]);
 
@@ -195,18 +233,18 @@ export function Scene() {
       )}
 
       {/* Snap feedback */}
-      {snapFeedback && snapFeedback.success && (
+      {snapFeedback && snapFeedback.message && (
         <Html center>
           <div style={{
             padding: '10px 20px',
-            background: 'rgba(0, 255, 0, 0.9)',
+            background: snapFeedback.success ? 'rgba(0, 255, 0, 0.9)' : 'rgba(255, 0, 0, 0.9)',
             color: 'white',
             borderRadius: '8px',
             fontSize: '18px',
             fontWeight: 'bold',
             pointerEvents: 'none'
           }}>
-            ✓ Snapped!
+            {snapFeedback.message}
           </div>
         </Html>
       )}
