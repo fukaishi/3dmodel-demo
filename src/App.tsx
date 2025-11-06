@@ -18,7 +18,7 @@ const sampleLevel: Level = {
       snapTo: 'socket1',
       rotStep: 15,
       start: {
-        pos: [-2, 0, 0],
+        pos: [-2, 0.5, 0],
         rot: [0, 0, 0],
       },
     },
@@ -28,7 +28,7 @@ const sampleLevel: Level = {
       snapTo: 'socket2',
       rotStep: 15,
       start: {
-        pos: [2, 0, 0],
+        pos: [2, 0.5, 0],
         rot: [0, 0, 0],
       },
     },
@@ -38,7 +38,7 @@ const sampleLevel: Level = {
       snapTo: 'socket3',
       rotStep: 15,
       start: {
-        pos: [0, 0, 2],
+        pos: [0, 0.5, 2],
         rot: [0, 0, 0],
       },
     },

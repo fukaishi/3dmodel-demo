@@ -73,41 +73,47 @@ export function createFallbackTarget(): Group {
 
   // Base - matches part1 position
   const baseGeometry = new BoxGeometry(0.5, 0.5, 0.5);
-  const baseMaterial = new MeshStandardMaterial({ color: 0xcccccc });
+  const baseMaterial = new MeshStandardMaterial({ color: 0x888888, transparent: true, opacity: 0.5 });
   const base = new Mesh(baseGeometry, baseMaterial);
-  base.position.set(0, 0, 0);
+  base.position.set(0, 0.25, 0); // Elevated so bottom is at y=0
+  base.castShadow = true;
+  base.receiveShadow = true;
   group.add(base);
 
   // Socket 1 marker (on top of base)
   const socket1 = new Object3D();
   socket1.name = '_SOCKET_socket1';
-  socket1.position.set(0, 0.25, 0);
+  socket1.position.set(0, 0.5, 0); // 0.25 + 0.25
   group.add(socket1);
 
   // Middle cylinder - matches part2
   const cylinderGeometry = new CylinderGeometry(0.2, 0.2, 0.6, 16);
-  const cylinderMaterial = new MeshStandardMaterial({ color: 0xcccccc });
+  const cylinderMaterial = new MeshStandardMaterial({ color: 0x888888, transparent: true, opacity: 0.5 });
   const cylinder = new Mesh(cylinderGeometry, cylinderMaterial);
-  cylinder.position.set(0, 0.55, 0); // 0.25 + 0.3
+  cylinder.position.set(0, 0.8, 0); // 0.5 + 0.3
+  cylinder.castShadow = true;
+  cylinder.receiveShadow = true;
   group.add(cylinder);
 
   // Socket 2 marker (bottom of cylinder, connects to socket1)
   const socket2 = new Object3D();
   socket2.name = '_SOCKET_socket2';
-  socket2.position.set(0, 0.25, 0);
+  socket2.position.set(0, 0.5, 0); // same as socket1
   group.add(socket2);
 
   // Top cube - matches part3
   const topGeometry = new BoxGeometry(0.4, 0.3, 0.4);
-  const topMaterial = new MeshStandardMaterial({ color: 0xcccccc });
+  const topMaterial = new MeshStandardMaterial({ color: 0x888888, transparent: true, opacity: 0.5 });
   const top = new Mesh(topGeometry, topMaterial);
-  top.position.set(0, 1.0, 0); // 0.25 + 0.6 + 0.15
+  top.position.set(0, 1.25, 0); // 0.8 + 0.3 + 0.15
+  top.castShadow = true;
+  top.receiveShadow = true;
   group.add(top);
 
   // Socket 3 marker (bottom of top cube, connects to top of cylinder)
   const socket3 = new Object3D();
   socket3.name = '_SOCKET_socket3';
-  socket3.position.set(0, 0.85, 0); // 0.25 + 0.6
+  socket3.position.set(0, 1.1, 0); // 0.8 + 0.3
   group.add(socket3);
 
   return group;

@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrthographicCamera, Grid } from '@react-three/drei';
+import { Grid } from '@react-three/drei';
 import { Group } from 'three';
 import { Ghost } from './Ghost';
 import { Part } from './Part';
@@ -12,7 +12,6 @@ export function Scene() {
   const parts = useGameStore((state) => state.parts);
   const selectedPartId = useGameStore((state) => state.selectedPartId);
   const showGrid = useGameStore((state) => state.showGrid);
-  const zoomLevel = useGameStore((state) => state.zoomLevel);
 
   const [snapSystem] = useState(() => new SnapSystem());
   const ghostRef = useRef<Group>(null);
@@ -52,20 +51,13 @@ export function Scene() {
       style={{ width: '100vw', height: '100vh', background: '#1a1a2e' }}
       tabIndex={0}
       onKeyDown={(e) => e.preventDefault()}
+      camera={{ position: [5, 5, 5], fov: 50 }}
     >
-      {/* Isometric camera */}
-      <OrthographicCamera
-        makeDefault
-        position={[10, 10, 10]}
-        zoom={50 * zoomLevel}
-        near={0.1}
-        far={1000}
-      />
-
       {/* Lighting */}
-      <ambientLight intensity={0.5} />
-      <directionalLight position={[10, 10, 5]} intensity={0.8} />
-      <directionalLight position={[-10, -10, -5]} intensity={0.3} />
+      <ambientLight intensity={0.6} />
+      <directionalLight position={[10, 10, 5]} intensity={0.8} castShadow />
+      <directionalLight position={[-5, 5, -5]} intensity={0.4} />
+      <pointLight position={[0, 10, 0]} intensity={0.5} />
 
       {/* Grid */}
       {showGrid && (
