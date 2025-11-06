@@ -1,5 +1,5 @@
 import { Vector3, Quaternion, Object3D, Euler } from 'three';
-import { AttachPoint, SocketPoint } from '../types';
+import type { AttachPoint, SocketPoint } from '../types';
 
 export interface SnapResult {
   success: boolean;

@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { useGLTF } from '@react-three/drei';
-import { Group, MeshStandardMaterial, Euler, Quaternion } from 'three';
-import { useGameStore } from '../state/game.store';
-import { PartState } from '../types';
+import { Group, MeshStandardMaterial, Euler } from 'three';
+import type { PartState } from '../types';
+import { createFallbackPart1, createFallbackPart2, createFallbackPart3 } from './FallbackModels';
 
 interface PartProps {
   partState: PartState;
@@ -15,26 +14,43 @@ export function Part({ partState, isSelected, onLoaded }: PartProps) {
   const groupRef = useRef<Group>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Load the GLTF model
-  const { scene } = useGLTF(partState.config.file);
-
   useEffect(() => {
     if (!groupRef.current) return;
 
-    // Clone the scene to avoid modifying the cached original
-    const clonedScene = scene.clone(true);
+    // Use fallback models based on part ID
+    const loadModel = () => {
+      let fallbackModel: Group;
 
-    // Clear previous children
-    groupRef.current.clear();
-    groupRef.current.add(clonedScene);
+      switch (partState.id) {
+        case 'part1':
+          fallbackModel = createFallbackPart1();
+          break;
+        case 'part2':
+          fallbackModel = createFallbackPart2();
+          break;
+        case 'part3':
+          fallbackModel = createFallbackPart3();
+          break;
+        default:
+          fallbackModel = createFallbackPart1();
+      }
 
-    setIsLoaded(true);
+      // Clear previous children
+      if (groupRef.current) {
+        groupRef.current.clear();
+        groupRef.current.add(fallbackModel);
 
-    // Notify parent that model is loaded
-    if (onLoaded) {
-      onLoaded(groupRef.current);
-    }
-  }, [scene, onLoaded]);
+        setIsLoaded(true);
+
+        // Notify parent that model is loaded
+        if (onLoaded) {
+          onLoaded(groupRef.current);
+        }
+      }
+    };
+
+    loadModel();
+  }, [partState.id, onLoaded]);
 
   // Update position and rotation from state
   useFrame(() => {

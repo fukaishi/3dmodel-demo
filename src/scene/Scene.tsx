@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrthographicCamera, Grid } from '@react-three/drei';
 import { Group } from 'three';
@@ -6,7 +6,6 @@ import { Ghost } from './Ghost';
 import { Part } from './Part';
 import { useGameStore } from '../state/game.store';
 import { SnapSystem } from '../systems/SnapSystem';
-import { SocketPoint } from '../types';
 
 export function Scene() {
   const currentLevel = useGameStore((state) => state.currentLevel);
@@ -16,14 +15,12 @@ export function Scene() {
   const zoomLevel = useGameStore((state) => state.zoomLevel);
 
   const [snapSystem] = useState(() => new SnapSystem());
-  const [sockets, setSockets] = useState<SocketPoint[]>([]);
   const ghostRef = useRef<Group>(null);
 
   // Extract sockets when ghost model loads
   const handleGhostLoaded = (group: Group) => {
     ghostRef.current = group;
     const extractedSockets = snapSystem.extractSockets(group);
-    setSockets(extractedSockets);
     console.log(`Extracted ${extractedSockets.length} sockets from ghost model`);
   };
 

@@ -3,7 +3,7 @@ import { Scene } from './scene/Scene';
 import { HUD } from './ui/HUD';
 import { useGameStore } from './state/game.store';
 import { KeyboardControls } from './systems/KeyboardControls';
-import { Level } from './types';
+import type { Level } from './types';
 import './App.css';
 
 // Sample level data

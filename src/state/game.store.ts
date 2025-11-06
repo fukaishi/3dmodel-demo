@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { Vector3 } from 'three';
-import { GameState, Level, PartState, PartConfig, GameStats, LevelProgress } from '../types';
+import type { GameState, Level, PartState, PartConfig, GameStats, LevelProgress } from '../types';
 
 interface GameStore {
   // Game state
