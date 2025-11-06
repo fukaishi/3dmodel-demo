@@ -86,7 +86,8 @@ export class SnapSystem {
    */
   findBestSocket(
     attachPoints: AttachPoint[],
-    targetSocketName: string
+    targetSocketName: string,
+    symmetryType?: 'box' | 'cylinder' | 'sphere' | 'none'
   ): SnapResult {
     if (attachPoints.length === 0) {
       return { success: false };
@@ -136,13 +137,18 @@ export class SnapSystem {
       // Calculate position difference
       const posDiff = attachPoint.position.distanceTo(socket.position);
 
-      // Calculate angle difference
-      const angleDiff = this.quaternionAngleDegrees(
+      // Calculate angle difference (considering symmetry)
+      const baseAngleDiff = this.quaternionAngleDegrees(
         attachPoint.quaternion,
         socket.quaternion
       );
+      const angleDiff = this.calculateSymmetricAngleDiff(
+        attachPoint.quaternion,
+        socket.quaternion,
+        symmetryType
+      );
 
-      console.log(`    - Socket "${socket.name}": posDiff=${posDiff.toFixed(4)}, angleDiff=${angleDiff.toFixed(2)}°, isCorrect=${isCorrect}, tolerance=(pos<${this.tolerance.pos}, angle<${this.tolerance.deg}°)`);
+      console.log(`    - Socket "${socket.name}": posDiff=${posDiff.toFixed(4)}, angleDiff=${baseAngleDiff.toFixed(2)}° (${symmetryType ? `adjusted: ${angleDiff.toFixed(2)}°` : 'no symmetry'}), isCorrect=${isCorrect}, tolerance=(pos<${this.tolerance.pos}, angle<${this.tolerance.deg}°)`);
 
       // Check if within tolerance
       if (posDiff < this.tolerance.pos && angleDiff < this.tolerance.deg) {
@@ -189,7 +195,8 @@ export class SnapSystem {
     partPosition: Vector3,
     partRotation: Euler,
     attachPoints: AttachPoint[],
-    targetSocketName: string
+    targetSocketName: string,
+    symmetryType?: 'box' | 'cylinder' | 'sphere' | 'none'
   ): SnapResult {
     console.log('🔧 trySnap called with:', {
       partPosition,
@@ -197,6 +204,7 @@ export class SnapSystem {
       attachPointsCount: attachPoints.length,
       attachPointNames: attachPoints.map(ap => ap.name),
       targetSocketName,
+      symmetryType: symmetryType || 'none',
       availableSockets: this.sockets.length
     });
 
@@ -209,7 +217,7 @@ export class SnapSystem {
 
     console.log('🔄 Updated attach points:', updatedAttachPoints.map(ap => ({ name: ap.name, position: ap.position })));
 
-    const result = this.findBestSocket(updatedAttachPoints, targetSocketName);
+    const result = this.findBestSocket(updatedAttachPoints, targetSocketName, symmetryType);
     console.log('📊 findBestSocket result:', result);
 
     return result;
@@ -250,6 +258,46 @@ export class SnapSystem {
     const clampedDot = Math.min(1, dot);
     const angle = 2 * Math.acos(clampedDot);
     return (angle * 180) / Math.PI;
+  }
+
+  /**
+   * Calculate angle difference considering symmetry
+   * Returns the minimum angle difference considering the part's symmetry
+   */
+  private calculateSymmetricAngleDiff(
+    q1: Quaternion,
+    q2: Quaternion,
+    symmetryType?: 'box' | 'cylinder' | 'sphere' | 'none'
+  ): number {
+    const baseDiff = this.quaternionAngleDegrees(q1, q2);
+
+    if (!symmetryType || symmetryType === 'none') {
+      return baseDiff;
+    }
+
+    // Sphere: any rotation is acceptable
+    if (symmetryType === 'sphere') {
+      return 0;
+    }
+
+    // Cylinder: Y-axis rotation doesn't matter
+    // For simplicity, if angle diff is mostly around Y-axis, reduce it significantly
+    if (symmetryType === 'cylinder') {
+      // If the angle is less than tolerance already, keep it
+      if (baseDiff < this.tolerance.deg) return baseDiff;
+      // Otherwise, be very lenient (assume Y-axis rotation)
+      return baseDiff * 0.1; // Reduce impact of rotation
+    }
+
+    // Box: 90-degree rotational symmetry
+    if (symmetryType === 'box') {
+      // Find the nearest 90-degree multiple
+      const mod90 = baseDiff % 90;
+      const diff = Math.min(mod90, 90 - mod90);
+      return diff;
+    }
+
+    return baseDiff;
   }
 
   /**
