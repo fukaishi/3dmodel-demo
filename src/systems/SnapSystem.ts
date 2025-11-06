@@ -120,10 +120,21 @@ export class SnapSystem {
       return { success: false };
     }
 
+    // Prioritize correct socket name: check target socket first
+    const correctSocketCandidates = candidates.filter((s) => s.name === targetSocketName);
+    const otherCandidates = candidates.filter((s) => s.name !== targetSocketName);
+
+    console.log(`  🎯 Target socket: "${targetSocketName}"`);
+    console.log(`  📍 Found ${correctSocketCandidates.length} correct candidates:`, correctSocketCandidates.map(s => s.name));
+    console.log(`  📍 Found ${otherCandidates.length} other candidates:`, otherCandidates.map(s => s.name));
+
+    // Try correct sockets first, then others
+    const orderedCandidates = [...correctSocketCandidates, ...otherCandidates];
+
     let bestSocket: SocketPoint | null = null;
     let bestScore = Infinity;
 
-    for (const socket of candidates) {
+    for (const socket of orderedCandidates) {
       // Check name match
       const isCorrect = socket.name === targetSocketName;
 
@@ -143,7 +154,7 @@ export class SnapSystem {
           bestSocket = socket;
           bestScore = score;
 
-          // For name matching, we only accept the correct socket
+          // For correct socket name, accept immediately
           if (isCorrect) {
             break;
           }
